@@ -116,7 +116,7 @@ class GitHub:
 
     def call(self, method, path, data=None):
         url = 'https://api.github.com/repos/' + self.repo + path
-        headers = {'Authorization': 'Bearer ' + self.token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'}
+        headers = {'Authorization': 'Bearer ' + self.token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28'}
         payload = None if data is None else json.dumps(data).encode('utf-8')
         req = request.Request(url, data=payload, headers=headers, method=method)
         try:
