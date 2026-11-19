@@ -1,0 +1,39 @@
+name: Внешний сторож
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        type: boolean
+        default: true
+      mock:
+        type: boolean
+        default: false
+      send_test:
+        type: boolean
+        default: false
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: external-watchdog
+  cancel-in-progress: false
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Проверка
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          INPUT_MOCK: ${{ inputs.mock }}
+          INPUT_SEND_TEST: ${{ inputs.send_test }}
+          PYTHONUTF8: '1'
+        run: python -B monitor.py
